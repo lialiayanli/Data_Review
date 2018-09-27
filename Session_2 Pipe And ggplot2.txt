@@ -1,0 +1,97 @@
+## 9/27/2018 Session Two
+data(iris)
+data(mtcars)
+
+head(mtcars,3)
+
+str(mtcars)
+
+
+NROW(mtcars)
+
+test <- rbind(test,mtcars)
+str(test)
+NROW(test)
+
+## data preparation
+
+#add date
+
+test$Date <- seq(from=as.Date("2016-01-03"),by=7, length.out = NROW(test))
+
+#seq <- seq(1,by=1,length.out=10)
+#seq
+str(test)
+#show car names
+
+test$cars <-rownames(test)
+#data screening
+head(test)
+str(test)
+summary(test)
+
+test$cars <- as.factor(test$cars)
+levels(as.factor(test$cars))
+
+test$sales <- seq(from=400,by=6,length.out = NROW(test))
+
+test$sales_norm <-rnorm(NROW(test),mean=800,sd=50)
+
+#### 01 Pipe + Data Manipulation
+
+## select
+
+
+test01 <- test %>% select(Date,cars,mpg,gear)
+head(test01)
+
+## filter
+test01 <- test %>% select(Date,cars,mpg,gear,sales) 
+test02 <- test01 %>% filter(gear==4)
+
+test  %>% select(Date,cars,mpg,gear,sales) %>% filter(Date >="2019-01-01" & gear==4)
+
+## summarise & group by
+
+sales01 <- test %>% select(Date,cars,mpg,gear,sales) %>% group_by(gear) %>% summarise(total_sales=sum(sales))
+sales02 <- test %>% select(Date,cars,mpg,gear,sales) %>% group_by(mpg,gear) %>% summarise(total_sales=sum(sales))
+
+## mutate
+str(test)
+test %>% select(Date,cars,mpg,gear,sales) %>% group_by(gear) %>% mutate(unit_sales=sales/mpg)
+head(test)
+# sense check 
+19*21
+
+#### 02 Pipe + Data Visualization
+
+library(ggplot2)
+
+## ggplot + geom_point
+
+test %>% ggplot(aes(Date,sales_norm)) + geom_point()
+
+## ggplot + geom_line
+test %>% ggplot(aes(Date,mpg)) + geom_line(na.rm=TRUE)
+
+test %>% ggplot(aes(sales_norm)) + geom_histogram()
+
+## add titles
+test %>% ggplot(aes(sales_norm)) + geom_histogram() + labs(title="Sales Toal")
+
+test %>% ggplot(aes(Date,sales_norm)) + geom_line() + labs(title="Sales",subtitle="9/27/2018")
+
+
+
+## change theme
+#https://ggplot2.tidyverse.org/reference/theme.html
+
+
+test %>% ggplot(aes(Date,sales_norm)) + geom_line() + labs(title="Sales",subtitle="9/27/2018") + theme(plot.background=element_rect(fill="pink"),panel.background = element_rect(fill="yellow"))
+
+test %>% ggplot(aes(Date,sales_norm)) + geom_line() + labs(title="Sales",subtitle="9/27/2018") + theme_gray()
+
+
+
+
+
